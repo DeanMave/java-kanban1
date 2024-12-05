@@ -8,16 +8,17 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private List<Task> history = new ArrayList<>();
     private Map<Integer, Node<Task>> linkHistory = new HashMap<>();
-    private Node head;
-    private Node tail;
+    private Node<Task> head;
+    private Node<Task> tail;
 
-    public void linkLast(Task task) {
+    public void linkLast(Node<Task> node) {
         final Node<Task> oldTail = tail;
-        final Node<Task> newTail = new Node<>(null, task, oldTail);
-        tail = newTail;
+        final Node<Task> newTail = node;
         if (oldTail == null) {
+            head = newTail;
+            tail = newTail;
+        } else if (head == tail){
             tail = newTail;
         } else {
             oldTail.prev = newTail;
@@ -26,6 +27,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public List<Task> getTasks() {
         Node<Task> currentNode = head;
+        List<Task> history = new ArrayList<>();
         while (currentNode != null) {
             history.add(currentNode.data);
             currentNode = currentNode.next;
@@ -35,51 +37,45 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void addTask(Task task) {
-        if (linkHistory.containsKey(task.getId())) {
-         return;
+        final int id = task.getId();
+        if (linkHistory.containsKey(id)) {
+            return;
         } else {
-            Node newNode = new Node(null, task, null);
-            if (head == null) {
-                head = newNode;
-                tail = newNode;
-            } else {
-                linkLast(task);
-            }
+            Node<Task> newNode = new Node(null, task, null);
+            linkLast(newNode);
             linkHistory.put(task.getId(), newNode);
-            history.add(task);
         }
     }
 
     @Override
     public List<Task> getHistory() {
-        List<Task> copyHistory = new ArrayList<>(history);
-        return copyHistory;
+        return getTasks();
     }
 
     @Override
     public void remove(int id) {
-        Node currentNode = linkHistory.get(id);
+        Node<Task> currentNode = linkHistory.remove(id);
         removeNode(currentNode);
     }
 
-    public void removeNode(Node currentNode) {
+    public void removeNode(Node<Task> currentNode) {
         if (currentNode == null) {
             return;
         }
         if (currentNode == head && currentNode != tail) {
-            Node nextNode = currentNode.next;
+            Node<Task> nextNode = currentNode.next;
             nextNode.prev = null;
             head = nextNode;
         } else if (currentNode == tail && currentNode != head) {
-            Node prevNode = currentNode.prev;
+            Node<Task> prevNode = currentNode.prev;
             prevNode.next = null;
             tail = prevNode;
         } else if (currentNode == head && currentNode == tail) {
             head = null;
             tail = null;
         } else {
-            Node nextNode = currentNode.next;
-            Node prevNode = currentNode.prev;
+            Node<Task> nextNode = currentNode.next;
+            Node<Task> prevNode = currentNode.prev;
             prevNode.next = currentNode.next;
             nextNode.prev = currentNode.prev;
         }

@@ -68,7 +68,7 @@ public class Main {
                 System.out.println("--> " + t);
             }
         }
-
+        manager.getTask(taskId1);
         manager.getTask(taskId2);
         System.out.println("История поиска");
         manager.getHistory();

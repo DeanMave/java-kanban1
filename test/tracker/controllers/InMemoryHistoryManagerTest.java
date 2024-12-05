@@ -24,6 +24,8 @@ class InMemoryHistoryManagerTest {
     void addToHistoryTest() {
         Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
         historyManager.addTask(task);
+        Task task1 = new Task("Task 2", "Description 2", TaskStatus.NEW);
+        historyManager.addTask(task1);
         List<Task> tasks = historyManager.getHistory();
         List<Task> tasksExp = new ArrayList<>();
         tasksExp.add(task);
@@ -41,5 +43,4 @@ class InMemoryHistoryManagerTest {
         tasksExp.add(task);
         assertEquals(tasksExp, tasks2);
     }
-
 }
