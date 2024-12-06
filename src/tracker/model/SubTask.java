@@ -1,7 +1,5 @@
 package tracker.model;
 
-import java.util.ArrayList;
-
 public class SubTask extends Task {
     private int epicId;
 

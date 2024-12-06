@@ -14,17 +14,16 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public void linkLast(Node<Task> node) {
         final Node<Task> oldTail = tail;
-        final Node<Task> newTail = node;
+        tail = node;
         if (oldTail == null) {
-            head = newTail;
-            tail = newTail;
-        } else if (head == tail) {
-            tail = newTail;
+            head = node;
         } else {
-            oldTail.prev = newTail;
+            oldTail.next = node;
+            node.prev = oldTail;
         }
     }
 
+    // Получение списка задач из двусвязного списка
     public List<Task> getTasks() {
         Node<Task> currentNode = head;
         List<Task> history = new ArrayList<>();
@@ -39,12 +38,11 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void addTask(Task task) {
         final int id = task.getId();
         if (linkHistory.containsKey(id)) {
-            return;
-        } else {
-            Node<Task> newNode = new Node(null, task, null);
-            linkLast(newNode);
-            linkHistory.put(task.getId(), newNode);
+            remove(id);
         }
+        Node<Task> newNode = new Node<>(null, task, null);
+        linkLast(newNode);
+        linkHistory.put(id, newNode);
     }
 
     @Override
@@ -55,29 +53,37 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void remove(int id) {
         Node<Task> currentNode = linkHistory.remove(id);
-        removeNode(currentNode);
+        if (currentNode != null) {
+            removeNode(currentNode);
+        }
     }
 
     public void removeNode(Node<Task> currentNode) {
         if (currentNode == null) {
             return;
         }
-        if (currentNode == head && currentNode != tail) {
-            Node<Task> nextNode = currentNode.next;
-            nextNode.prev = null;
-            head = nextNode;
-        } else if (currentNode == tail && currentNode != head) {
-            Node<Task> prevNode = currentNode.prev;
-            prevNode.next = null;
-            tail = prevNode;
-        } else if (currentNode == head && currentNode == tail) {
+        if (currentNode == head && currentNode == tail) {
             head = null;
             tail = null;
+        } else if (currentNode == head) {
+            head = currentNode.next;
+            if (head != null) {
+                head.prev = null;
+            }
+        } else if (currentNode == tail) {
+            tail = currentNode.prev;
+            if (tail != null) {
+                tail.next = null;
+            }
         } else {
             Node<Task> nextNode = currentNode.next;
             Node<Task> prevNode = currentNode.prev;
-            prevNode.next = currentNode.next;
-            nextNode.prev = currentNode.prev;
+            if (prevNode != null) {
+                prevNode.next = nextNode;
+            }
+            if (nextNode != null) {
+                nextNode.prev = prevNode;
+            }
         }
     }
 }
