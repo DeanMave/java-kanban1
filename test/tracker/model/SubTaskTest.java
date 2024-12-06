@@ -34,7 +34,7 @@ class SubTaskTest {
     @Test
     public void testToString() {
         SubTask subTask = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, 1);
-        String expected = "tracker.model.SubTask@7bc1a03d";
+        String expected = "SubTask{epicId=1}";
         assertEquals(expected, subTask.toString());
     }
 

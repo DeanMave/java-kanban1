@@ -34,7 +34,7 @@ class EpicTest {
     @Test
     public void testToString() {
         Epic epic = new Epic("Epic 1", "Description 1");
-        String expected = "tracker.model.Epic@7bc1a03d";
+        String expected = "Epic{subtaskIds=[]}";
         assertEquals(expected, epic.toString());
     }
 }
