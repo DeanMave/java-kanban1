@@ -47,7 +47,7 @@ class TaskTest {
     @Test
     void testToString() {
         Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
-        String expected = "tracker.model.Task@dd3b207";
+        String expected = "Task{id=0, name='Task 1', description='Description 1', status=NEW}";
         assertEquals(expected, task.toString());
     }
 

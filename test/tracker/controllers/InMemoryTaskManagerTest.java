@@ -16,18 +16,19 @@ class InMemoryTaskManagerTest {
     void setUp() {
         taskManager = new InMemoryTaskManager();
     }
+
     @Test
     void createTaskTest() {
         Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
         int taskId = taskManager.addNewTask(task);
-        assertEquals(0,taskId);
+        assertEquals(0, taskId);
         Task task2 = new Task("Task 1", "Description 1", TaskStatus.NEW);
         int taskId2 = taskManager.addNewTask(task);
-        assertEquals(1,taskId2);
+        assertEquals(1, taskId2);
         Task retrievedTask = taskManager.getTask(taskId);
         assertEquals(task, retrievedTask);
     }
-    // методы получения мапы убрались, переделать тесты
+
     @Test
     void createAndRetrieveEpicWithSubtasksTest() {
         Epic epic = new Epic("Epic 1", "Description 1");
@@ -42,12 +43,12 @@ class InMemoryTaskManagerTest {
         List<SubTask> subTasks = taskManager.getSubtasks();
         assertEquals(2, subTasks.size());
         List<SubTask> retrievedSubtasks = new ArrayList<>();
-        for (SubTask s: subTasks) {
-            if(s.getEpicId() == epicId) {
+        for (SubTask s : subTasks) {
+            if (s.getEpicId() == epicId) {
                 retrievedSubtasks.add(s);
             }
         }
-        assertEquals(2,retrievedSubtasks.size());
+        assertEquals(2, retrievedSubtasks.size());
         SubTask retrievedSubtask1 = retrievedSubtasks.get(0);
         SubTask retrievedSubtask2 = retrievedSubtasks.get(1);
         assertEquals(subTask1, retrievedSubtask1);
@@ -57,8 +58,8 @@ class InMemoryTaskManagerTest {
     @Test
     void updateTaskStatusTest() {
         Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
-       task.setStatus(TaskStatus.DONE);
-       assertEquals(TaskStatus.DONE,task.getStatus());
+        task.setStatus(TaskStatus.DONE);
+        assertEquals(TaskStatus.DONE, task.getStatus());
     }
 
     @Test
@@ -67,7 +68,7 @@ class InMemoryTaskManagerTest {
         final int taskId = taskManager.addNewTask(task);
         taskManager.deleteTask(taskId);
         List<Task> tasks = taskManager.getTasks();
-        assertEquals(0,tasks.size());
+        assertEquals(0, tasks.size());
     }
 
     @Test
@@ -77,10 +78,10 @@ class InMemoryTaskManagerTest {
         SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId);
         int subTaskId1 = taskManager.addNewSubTask(subTask1);
         taskManager.updateEpicStatus(epicId);
-        assertEquals(subTask1.getStatus(),epic.getStatus());
+        assertEquals(subTask1.getStatus(), epic.getStatus());
         subTask1.setStatus(TaskStatus.DONE);
         taskManager.updateEpicStatus(epicId);
-       assertEquals(subTask1.getStatus(),epic.getStatus());
+        assertEquals(subTask1.getStatus(), epic.getStatus());
     }
 
     @Test
@@ -89,7 +90,7 @@ class InMemoryTaskManagerTest {
         final int taskId = taskManager.addNewTask(task);
         taskManager.deleteTasks();
         List<Task> tasks = taskManager.getTasks();
-        assertEquals(0,tasks.size());
+        assertEquals(0, tasks.size());
     }
 
     @Test
@@ -99,16 +100,16 @@ class InMemoryTaskManagerTest {
         SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId);
         int subTaskId1 = taskManager.addNewSubTask(subTask1);
         taskManager.deleteSubtask(subTaskId1);
-        List<SubTask> subTasks= taskManager.getSubtasks();
-        assertEquals(0,subTasks.size());
+        List<SubTask> subTasks = taskManager.getSubtasks();
+        assertEquals(0, subTasks.size());
     }
 
     @Test
     void deleteAllEpicsTest() {
         Epic epic = new Epic("Epic 1", "Description 1");
-       taskManager.deleteEpics();
+        taskManager.deleteEpics();
         List<Epic> epics = taskManager.getEpics();
-       assertEquals(0,epics.size());
+        assertEquals(0, epics.size());
     }
 
     @Test
@@ -124,7 +125,7 @@ class InMemoryTaskManagerTest {
         List<Task> historyExp = new ArrayList<>();
         historyExp.add(task);
         historyExp.add(epic);
-        assertEquals(historyExp,history,"Не равны");
+        assertEquals(historyExp, history, "Не равны");
     }
 
 }
