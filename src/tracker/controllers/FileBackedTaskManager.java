@@ -80,8 +80,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             sb.append(TasksTypes.TASK).append(",");
         }
 
-        sb.append(task.getName()).append(",").append(task.getStatus()).append(",").append(task.getDescription()).
-                append(",");
+        sb.append(task.getName()).append(",").append(task.getStatus()).append(",").append(task.getDescription())
+                        .append(",");
 
 
         if (task instanceof SubTask) {
