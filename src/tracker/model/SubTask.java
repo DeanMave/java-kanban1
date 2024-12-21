@@ -1,5 +1,7 @@
 package tracker.model;
 
+import tracker.enums.TaskStatus;
+
 public class SubTask extends Task {
     private int epicId;
 

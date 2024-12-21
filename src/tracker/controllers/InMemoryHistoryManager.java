@@ -1,5 +1,6 @@
 package tracker.controllers;
 
+import tracker.interfaces.HistoryManager;
 import tracker.model.Task;
 
 import java.util.ArrayList;

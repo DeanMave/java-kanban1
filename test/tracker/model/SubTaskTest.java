@@ -1,6 +1,7 @@
 package tracker.model;
 
 import org.junit.jupiter.api.Test;
+import tracker.enums.TaskStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
 

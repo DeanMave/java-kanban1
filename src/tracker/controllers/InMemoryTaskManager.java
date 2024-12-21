@@ -1,5 +1,8 @@
 package tracker.controllers;
 
+import tracker.enums.TaskStatus;
+import tracker.interfaces.HistoryManager;
+import tracker.interfaces.TaskManager;
 import tracker.model.*;
 
 

@@ -1,4 +1,4 @@
-package tracker.controllers;
+package tracker.interfaces;
 
 import tracker.model.*;
 

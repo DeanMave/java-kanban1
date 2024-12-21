@@ -1,5 +1,7 @@
 package tracker.model;
 
+import tracker.enums.TaskStatus;
+
 import java.util.Objects;
 
 public class Task {
