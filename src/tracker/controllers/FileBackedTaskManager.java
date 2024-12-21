@@ -5,13 +5,10 @@ import tracker.model.*;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private File file;
-    private List<Task> changedTasks = new ArrayList<>();
 
     public FileBackedTaskManager(File file) {
         this.file = file;
@@ -81,7 +78,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         sb.append(task.getName()).append(",").append(task.getStatus()).append(",").append(task.getDescription())
-                        .append(",");
+                .append(",");
 
 
         if (task instanceof SubTask) {
