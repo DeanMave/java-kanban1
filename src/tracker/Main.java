@@ -1,6 +1,8 @@
 package tracker;
 
 import tracker.controllers.*;
+import tracker.enums.TaskStatus;
+import tracker.interfaces.TaskManager;
 import tracker.model.*;
 
 
@@ -19,9 +21,9 @@ public class Main {
         SubTask subtask1 = new SubTask("Subtask #1-1", "Subtask1 description", TaskStatus.NEW, epicId1);
         SubTask subtask2 = new SubTask("Subtask #2-1", "Subtask1 description", TaskStatus.NEW, epicId1);
         SubTask subtask3 = new SubTask("Subtask #3-2", "Subtask1 description", TaskStatus.DONE, epicId2);
-        final Integer subtaskId1 = manager.addNewSubTask(subtask1);
-        final Integer subtaskId2 = manager.addNewSubTask(subtask2);
-        final Integer subtaskId3 = manager.addNewSubTask(subtask3);
+        final int subtaskId1 = manager.addNewSubTask(subtask1);
+        final int subtaskId2 = manager.addNewSubTask(subtask2);
+        final int subtaskId3 = manager.addNewSubTask(subtask3);
 
         printAllTasks(manager);
         // Обновление

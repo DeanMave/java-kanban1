@@ -1,5 +1,7 @@
 package tracker.model;
 
+import tracker.enums.TaskStatus;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -29,8 +31,6 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
-                "subtaskIds=" + subtaskIds +
-                '}';
+        return super.toString();
     }
 }

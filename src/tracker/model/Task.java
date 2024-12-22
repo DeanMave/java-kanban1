@@ -1,5 +1,7 @@
 package tracker.model;
 
+import tracker.enums.TaskStatus;
+
 import java.util.Objects;
 
 public class Task {
@@ -64,11 +66,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
+        return id + "," + name + "," + description + "," + status;
     }
 }
