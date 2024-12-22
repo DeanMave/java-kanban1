@@ -1,6 +1,7 @@
 package tracker.controllers;
 
 import tracker.enums.*;
+import tracker.exceptions.ManagerSaveException;
 import tracker.model.*;
 
 import java.io.*;
@@ -33,6 +34,45 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         int id = super.addNewTask(subTask);
         save(subTask);
         return id;
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        super.updateTask(task);
+        save(task);
+    }
+
+    @Override
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
+        save(epic);
+    }
+
+    @Override
+    public void updateSubtask(SubTask subtask) {
+        super.updateSubtask(subtask);
+        save(subtask);
+    }
+
+    @Override
+    public void deleteTask(int id) {
+        Task task = super.getTask(id);
+        save(task);
+        super.deleteTask(id);
+    }
+
+    @Override
+    public void deleteEpic(int id) {
+        Epic epic = super.getEpic(id);
+        save(epic);
+        super.deleteEpic(id);
+    }
+
+    @Override
+    public void deleteSubtask(int id) {
+        SubTask subTask = super.getSubtask(id);
+        save(subTask);
+        super.deleteSubtask(id);
     }
 
     public void save(Task task) {
@@ -147,9 +187,5 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return manager;
     }
 
-    public static class ManagerSaveException extends RuntimeException {
-        public ManagerSaveException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
+
 }

@@ -35,7 +35,7 @@ class SubTaskTest {
     @Test
     public void testToString() {
         SubTask subTask = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, 1);
-        String expected = "SubTask{epicId=1}";
+        String expected = "0,Subtask 1,Description 1,NEW,1";
         assertEquals(expected, subTask.toString());
     }
 

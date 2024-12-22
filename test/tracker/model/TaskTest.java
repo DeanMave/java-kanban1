@@ -48,7 +48,7 @@ class TaskTest {
     @Test
     void testToString() {
         Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
-        String expected = "Task{id=0, name='Task 1', description='Description 1', status=NEW}";
+        String expected = "0,Task 1,Description 1,NEW";
         assertEquals(expected, task.toString());
     }
 
