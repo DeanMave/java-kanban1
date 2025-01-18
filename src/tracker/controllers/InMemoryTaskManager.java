@@ -1,15 +1,13 @@
 package tracker.controllers;
 
+import tracker.comporators.TaskComporator;
 import tracker.enums.TaskStatus;
 import tracker.interfaces.HistoryManager;
 import tracker.interfaces.TaskManager;
 import tracker.model.*;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private HistoryManager historyManager = new InMemoryHistoryManager();
@@ -36,13 +34,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<SubTask> getEpicSubtasks(int epicId) {
-        List<SubTask> subtasks = new ArrayList<>();
-        for (SubTask subtask : subtasks) {
-            if (subtask.getEpicId() == epicId) {
-                subtasks.add(subtask);
-            }
-        }
-        return subtasks;
+        return getSubtasks().stream().filter(subTask -> subTask.getEpicId() == epicId).toList();
     }
 
     @Override
@@ -80,6 +72,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addNewTask(Task task) {
+        boolean intersectionOfTasks = tasks.values().stream()
+                .anyMatch(presentTask -> intersectionOfTasks(task, presentTask));
+        if (intersectionOfTasks) {
+            throw new IllegalArgumentException("Время выполнения задачи пересекается уже с существующей задачей");
+        }
         task.setId(taskCounter++);
         tasks.put(task.getId(), task);
         return task.getId();
@@ -94,6 +91,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addNewSubTask(SubTask subTask) {
+        boolean intersectionOfSubTasks = subTasks.values().stream()
+                .anyMatch(presentSubtask -> intersectionOfTasks(subTask, presentSubtask));
+        if (intersectionOfSubTasks) {
+            throw new IllegalArgumentException("Время выполнения подзадачи пересекается уже с существующей задачей");
+        }
         subTask.setId(taskCounter++);
         subTasks.put(subTask.getId(), subTask);
         Epic epic = epics.get(subTask.getEpicId());
@@ -104,19 +106,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpicStatus(int id) {
-        int statusNew = 0;
-        int statusDone = 0;
         Epic epic = epics.get(id);
         List<Integer> subTaskIds = epic.getSubtaskIds();
-        for (Integer subTaskId : subTaskIds) {
-            SubTask subTask = subTasks.get(subTaskId);
-            TaskStatus status = subTask.getStatus();
-            if (status == TaskStatus.NEW) {
-                statusNew++;
-            } else if (status == TaskStatus.DONE) {
-                statusDone++;
-            }
-        }
+        long statusNew = subTaskIds.stream().map(subTasks::get)
+                .filter(subTask -> subTask.getStatus() == TaskStatus.NEW).count();
+        long statusDone = subTaskIds.stream().map(subTasks::get)
+                .filter(subTask -> subTask.getStatus() == TaskStatus.DONE).count();
         if (subTaskIds.isEmpty() || statusNew == subTaskIds.size()) {
             epic.setStatus(TaskStatus.NEW);
         } else if (statusDone == subTaskIds.size()) {
@@ -129,6 +124,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
+        boolean isOverlap = tasks.values().stream()
+                .filter(existingTask -> existingTask.getId() != task.getId())
+                .anyMatch(existingTask -> intersectionOfTasks(task, existingTask));
+        if (isOverlap) {
+            throw new IllegalArgumentException("Время выполнения задачи пересекается с другой задачей");
+        }
         tasks.put(task.getId(), task);
     }
 
@@ -139,6 +140,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubtask(SubTask subtask) {
+        boolean intersectionOfSubTasks = subTasks.values().stream()
+                .filter(presentSubtask -> presentSubtask.getId() != subtask.getId())
+                .filter(presentSubtask -> presentSubtask.getEpicId() != subtask.getEpicId())
+                .anyMatch(presentSubtask -> intersectionOfTasks(subtask, presentSubtask));
+        if (intersectionOfSubTasks) {
+            throw new IllegalArgumentException("Время выполнения подзадачи пересекается с другой подзадачей");
+        }
         subTasks.put(subtask.getId(), subtask);
         updateEpicStatus(subtask.getEpicId());
     }
@@ -189,10 +197,22 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         List<Task> history = historyManager.getHistory();
-        for (Task h : history) {
-            System.out.println(h);
-        }
+        history.stream().forEach(System.out::println);
         return history;
     }
 
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        List<Task> allTasks = new ArrayList<>();
+        allTasks.addAll(getTasks());
+        allTasks.addAll(getEpics());
+        allTasks.addAll(getSubtasks());
+        TreeSet<Task> prioritizedTasks = new TreeSet<>(new TaskComporator());
+        prioritizedTasks.addAll(allTasks);
+        return new ArrayList<>(prioritizedTasks);
+    }
+
+    public boolean intersectionOfTasks(Task t1, Task t2) {
+        return t1.getStartTime().isBefore(t2.getEndTime()) && t1.getEndTime().isAfter(t2.getStartTime());
+    }
 }

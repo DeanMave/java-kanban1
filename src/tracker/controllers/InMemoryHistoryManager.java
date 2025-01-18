@@ -24,7 +24,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    // Получение списка задач из двусвязного списка
     public List<Task> getTasks() {
         Node<Task> currentNode = head;
         List<Task> history = new ArrayList<>();
