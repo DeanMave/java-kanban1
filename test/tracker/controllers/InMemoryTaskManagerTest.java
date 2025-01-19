@@ -15,10 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
     private InMemoryTaskManager taskManager;
+    private InMemoryHistoryManager historyManager;
 
     @BeforeEach
     void setUp() {
         taskManager = new InMemoryTaskManager();
+        historyManager = new InMemoryHistoryManager();
     }
 
     @Test
@@ -73,7 +75,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteTaskByIdTest() {
-        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
+        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 10, 15));
         final int taskId = taskManager.addNewTask(task);
         taskManager.deleteTask(taskId);
         List<Task> tasks = taskManager.getTasks();
@@ -84,7 +87,8 @@ class InMemoryTaskManagerTest {
     void updateSubtaskAndEpicStatusTest() {
         Epic epic = new Epic("Epic 1", "Description 1");
         int epicId = taskManager.addNewEpic(epic);
-        SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId);
+        SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 11, 15));
         int subTaskId1 = taskManager.addNewSubTask(subTask1);
         taskManager.updateEpicStatus(epicId);
         assertEquals(subTask1.getStatus(), epic.getStatus());
@@ -95,7 +99,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteAllTasksTest() {
-        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
+        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 10, 15));
         final int taskId = taskManager.addNewTask(task);
         taskManager.deleteTasks();
         List<Task> tasks = taskManager.getTasks();
@@ -106,7 +111,8 @@ class InMemoryTaskManagerTest {
     void deleteSubtaskByIdTest() {
         Epic epic = new Epic("Epic 1", "Description 1");
         int epicId = taskManager.addNewEpic(epic);
-        SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId);
+        SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 11, 15));
         int subTaskId1 = taskManager.addNewSubTask(subTask1);
         taskManager.deleteSubtask(subTaskId1);
         List<SubTask> subTasks = taskManager.getSubtasks();
@@ -123,7 +129,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getHistoryTest() {
-        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
+        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 10, 15));
         int taskId = taskManager.addNewTask(task);
         Epic epic = new Epic("Epic 1", "Description 1");
         int epicId = taskManager.addNewEpic(epic);
@@ -146,10 +153,13 @@ class InMemoryTaskManagerTest {
         epic.setDuration(Duration.ofMinutes(50));
         epic.setStartTime(LocalDateTime.of(2025, Month.JULY, 9, 1, 15));
         int epicId = taskManager.addNewEpic(epic);
+        SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 11, 15));
+        int subTaskId1 = taskManager.addNewSubTask(subTask1);
         List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
         List<Task> prioritizedTasksExp = new ArrayList<>();
-        prioritizedTasksExp.add(epic);
         prioritizedTasksExp.add(task);
+        prioritizedTasksExp.add(subTask1);
         assertEquals(prioritizedTasksExp, prioritizedTasks);
     }
 
@@ -169,5 +179,78 @@ class InMemoryTaskManagerTest {
         List<SubTask> subTasksOfEpicExp = new ArrayList<>();
         subTasksOfEpicExp.add(subTask1);
         assertEquals(subTasksOfEpicExp, subTasksOfEpic);
+    }
+
+    @Test
+    void getTimeOfEpic() {
+        Epic epic = new Epic("Epic 1", "Description 1");
+        int epicId = taskManager.addNewEpic(epic);
+        SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 10, 15));
+        int subTaskId1 = taskManager.addNewSubTask(subTask1);
+        SubTask subTask2 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 11, 40));
+        int subTaskId2 = taskManager.addNewSubTask(subTask2);
+        SubTask subTask3 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 13, 45));
+        int subTaskId3 = taskManager.addNewSubTask(subTask3);
+        LocalDateTime startTimeExp = LocalDateTime.of(2025, Month.JULY, 9, 10, 15);
+        LocalDateTime endTimeExp = LocalDateTime.of(2025, Month.JULY, 9, 14, 35);
+        Duration durationExp = Duration.ofMinutes(150);
+        assertEquals(startTimeExp, epic.getStartTime());
+        assertEquals(endTimeExp, epic.getEndTime());
+        assertEquals(durationExp, epic.getDuration());
+    }
+
+    @Test
+    void deleteAllTasksInLists() {
+        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 10, 15));
+        int taskId = taskManager.addNewTask(task);
+        Epic epic = new Epic("Epic 1", "Description 1");
+        int epicId = taskManager.addNewEpic(epic);
+        SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 12, 15));
+        int subTaskId1 = taskManager.addNewSubTask(subTask1);
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        taskManager.deleteTasks();
+        List<Task> prioritizedTasks1 = taskManager.getPrioritizedTasks();
+        List<Task> prioritizedTasksExp = new ArrayList<>();
+        prioritizedTasksExp.add(subTask1);
+        assertEquals(prioritizedTasksExp, prioritizedTasks1);
+        taskManager.getTask(taskId);
+        taskManager.getSubtask(subTaskId1);
+        List<Task> history = taskManager.getHistory();
+        taskManager.deleteTasks();
+        List<Task> history1 = taskManager.getHistory();
+        List<Task> historyExp = new ArrayList<>();
+        historyExp.add(subTask1);
+        assertEquals(historyExp, history1);
+    }
+
+    @Test
+    void deleteAllSubTasksInLists() {
+        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 10, 15));
+        int taskId = taskManager.addNewTask(task);
+        Epic epic = new Epic("Epic 1", "Description 1");
+        int epicId = taskManager.addNewEpic(epic);
+        SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId, Duration.ofMinutes(50)
+                , LocalDateTime.of(2025, Month.JULY, 9, 12, 15));
+        int subTaskId1 = taskManager.addNewSubTask(subTask1);
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        taskManager.deleteSubtasks();
+        List<Task> prioritizedTasks1 = taskManager.getPrioritizedTasks();
+        List<Task> prioritizedTasksExp = new ArrayList<>();
+        prioritizedTasksExp.add(task);
+        assertEquals(prioritizedTasksExp, prioritizedTasks1);
+        taskManager.getTask(taskId);
+        taskManager.getSubtask(subTaskId1);
+        List<Task> history = taskManager.getHistory();
+        taskManager.deleteSubtasks();
+        List<Task> history1 = taskManager.getHistory();
+        List<Task> historyExp = new ArrayList<>();
+        historyExp.add(task);
+        assertEquals(historyExp, history1);
     }
 }
