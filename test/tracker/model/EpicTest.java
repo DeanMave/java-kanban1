@@ -34,7 +34,8 @@ class EpicTest {
     @Test
     public void testToString() {
         Epic epic = new Epic("Epic 1", "Description 1");
-        String expected = "0,Epic 1,Description 1,NEW";
+        String expected = "0,Epic 1,Description 1,NEW,null,null";
         assertEquals(expected, epic.toString());
     }
+
 }

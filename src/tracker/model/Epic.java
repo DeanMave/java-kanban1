@@ -2,11 +2,18 @@ package tracker.model;
 
 import tracker.enums.TaskStatus;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class Epic extends Task {
 
     protected ArrayList<Integer> subtaskIds = new ArrayList<>();
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    private LocalDateTime endTime;
 
     public void addSubtaskId(int id) {
         subtaskIds.add(id);
@@ -28,9 +35,13 @@ public class Epic extends Task {
         super(name, description, TaskStatus.NEW);
     }
 
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
 
     @Override
     public String toString() {
         return super.toString();
     }
+
 }

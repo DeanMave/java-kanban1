@@ -3,6 +3,10 @@ package tracker.model;
 import org.junit.jupiter.api.Test;
 import tracker.enums.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Month;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
@@ -48,8 +52,18 @@ class TaskTest {
     @Test
     void testToString() {
         Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
-        String expected = "0,Task 1,Description 1,NEW";
+        String expected = "0,Task 1,Description 1,NEW,null,null";
         assertEquals(expected, task.toString());
+    }
+
+    @Test
+    void testTimeOfTask() {
+        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
+        task.setDuration(Duration.ofMinutes(5));
+        task.setStartTime(LocalDateTime.of(2025, Month.JULY, 9, 1, 0));
+        LocalDateTime endTime = task.getEndTime();
+        LocalDateTime endTimeExp = LocalDateTime.of(2025, Month.JULY, 9, 1, 5);
+        assertEquals(endTimeExp, endTime);
     }
 
 }

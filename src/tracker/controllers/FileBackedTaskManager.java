@@ -6,6 +6,8 @@ import tracker.model.*;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -79,7 +81,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             if (file.length() == 0) {
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                    writer.write("id,type,name,status,description,epicId\n");
+                    writer.write("id,type,name,status,description,duration,startTime,endTime,epicId\n");
                 }
             }
             String taskAsString = toString(task);
@@ -120,6 +122,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         sb.append(task.getName()).append(",").append(task.getStatus()).append(",").append(task.getDescription())
                 .append(",");
 
+        if (task instanceof SubTask) {
+            sb.append(((SubTask) task).getEpicId()).append(",");
+        }
+        sb.append(task.getDuration().toMinutes()).append(",").append(task.getStartTime()).append(",")
+                .append(task.getEndTime()).append(",");
 
         if (task instanceof SubTask) {
             sb.append(((SubTask) task).getEpicId());
@@ -128,42 +135,37 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static Task fromString(String value) {
-        String[] parts = value.split(",");
+        String[] parts = value.trim().split(",");
         Task task;
-        Task epic;
-        Task subTask;
-        String idStr = parts[0];
-        String type = parts[1];
+        int id = Integer.parseInt(parts[0]);
+        TasksTypes types = TasksTypes.valueOf(parts[1].toUpperCase());
         String name = parts[2];
-        String statusStr = parts[3];
+        TaskStatus status = TaskStatus.valueOf(parts[3]);
         String description = parts[4];
-        Integer epicId = null;
-        if (parts.length > 5 && parts[5] != null) {
-            try {
-                epicId = Integer.parseInt(parts[5]);
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Некорректный формат epicId");
-            }
-        }
-        TaskStatus status = TaskStatus.valueOf(statusStr);
-        TasksTypes types = TasksTypes.valueOf(type);
+        Duration duration = parts.length > 5 ? Duration.ofMinutes(Long.parseLong(parts[5])) : null;
+        LocalDateTime startTime = parts.length > 6 ? LocalDateTime.parse(parts[6]) : null;
         switch (types) {
-            case TasksTypes.TASK:
-                task = new Task(name, description, status);
-                task.setId(Integer.parseInt(idStr));
-                return task;
-            case TasksTypes.EPIC:
-                epic = new Epic(name, description);
-                epic.setId(Integer.parseInt(idStr));
-                epic.setStatus(status);
-                return epic;
-            case TasksTypes.SUBTASK:
-                subTask = new SubTask(name, description, status, epicId);
-                subTask.setId(Integer.parseInt(idStr));
-                return subTask;
+            case TASK:
+                task = new Task(name, description, status, duration, startTime);
+                task.setId(id);
+                break;
+            case EPIC:
+//                "id,type,name,status,description,duration,startTime,epicId\n"
+                task = new Epic(name, description);
+                task.setId(id);
+                task.setStatus(status);
+                task.setDuration(duration);
+                task.setStartTime(startTime);
+                break;
+            case SUBTASK:
+                int epicId = Integer.parseInt(parts[7]);
+                task = new SubTask(name, description, status, epicId, duration, startTime);
+                task.setId(id);
+                break;
             default:
                 throw new IllegalArgumentException("Неизвестный тип задачи");
         }
+        return task;
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {

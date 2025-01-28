@@ -23,9 +23,9 @@ class InMemoryHistoryManagerTest {
     @Test
     void addToHistoryTest() {
         Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
-        task.setId(1); // Устанавливаем уникальный ID
+        task.setId(1);
         Task task1 = new Task("Task 2", "Description 2", TaskStatus.NEW);
-        task1.setId(2); // Устанавливаем уникальный ID
+        task1.setId(2);
 
         historyManager.addTask(task);
         historyManager.addTask(task1);
