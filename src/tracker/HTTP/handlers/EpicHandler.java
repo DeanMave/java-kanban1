@@ -25,35 +25,17 @@ public class EpicHandler extends BaseHttpHandler {
         try {
             String[] path = exchange.getRequestURI().getPath().split("/");
             if (path.length == 2) {
-                try {
-                    String epicsJson = gson.toJson(manager.getEpics());
-                    sendText(exchange, epicsJson, 200);
-                } catch (NotFoundException e) {
-                    sendNotFound(exchange);
-                }
-            } else if (path.length > 2 && path[3].equals("subtasks")) {
-                try {
-                    String epicsSubtasksJson = gson.toJson(manager.getEpicSubtasks(Integer.parseInt(path[2])));
-                    sendText(exchange, epicsSubtasksJson, 200);
-                } catch (NotFoundException e) {
-                    sendNotFound(exchange);
-                }
+                String epicsJson = gson.toJson(manager.getEpics());
+                sendText(exchange, epicsJson, 200);
+            } else if (path.length == 3) {
+                String epicByIdJson = gson.toJson(manager.getEpic(Integer.parseInt(path[2])));
+                sendText(exchange, epicByIdJson, 200);
+            } else if (path[3].equals("subtasks")) {
+                String epicsSubtasksJson = gson.toJson(manager.getEpicSubtasks(Integer.parseInt(path[2])));
+                sendText(exchange, epicsSubtasksJson, 200);
             } else {
                 sendNotFound(exchange);
             }
-        } catch (NotFoundException e) {
-            sendNotFound(exchange);
-        } catch (Exception e) {
-            sendInfernalServerError(exchange);
-        }
-    }
-
-    @Override
-    public void handleGetById(HttpExchange exchange) throws IOException {
-        try {
-            String[] path = exchange.getRequestURI().getPath().split("/");
-            String epicByIdJson = gson.toJson(manager.getEpic(Integer.parseInt(path[2])));
-            sendText(exchange, epicByIdJson, 200);
         } catch (NotFoundException e) {
             sendNotFound(exchange);
         } catch (Exception e) {

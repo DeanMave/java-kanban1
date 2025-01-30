@@ -27,21 +27,16 @@ public class SubTaskHandler extends BaseHttpHandler {
     @Override
     public void handleGet(HttpExchange exchange) throws IOException {
         try {
-            String subTasksJson = gson.toJson(manager.getSubtasks());
-            sendText(exchange, subTasksJson, 200);
-        } catch (NotFoundException e) {
-            sendNotFound(exchange);
-        } catch (Exception e) {
-            sendInfernalServerError(exchange);
-        }
-    }
-
-    @Override
-    public void handleGetById(HttpExchange exchange) throws IOException {
-        try {
             String[] path = exchange.getRequestURI().getPath().split("/");
-            String subTaskByIdJson = gson.toJson(manager.getSubtask(Integer.parseInt(path[2])));
-            sendText(exchange, subTaskByIdJson, 200);
+            if (path.length == 2) {
+                String subTasksJson = gson.toJson(manager.getSubtasks());
+                sendText(exchange, subTasksJson, 200);
+            } else if (path.length == 3) {
+                String subTaskByIdJson = gson.toJson(manager.getSubtask(Integer.parseInt(path[2])));
+                sendText(exchange, subTaskByIdJson, 200);
+            } else {
+                sendNotFound(exchange);
+            }
         } catch (NotFoundException e) {
             sendNotFound(exchange);
         } catch (Exception e) {

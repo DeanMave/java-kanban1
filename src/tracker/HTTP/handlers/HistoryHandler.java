@@ -27,19 +27,4 @@ public class HistoryHandler extends BaseHttpHandler {
             sendInfernalServerError(exchange);
         }
     }
-
-    @Override
-    public void handleGetById(HttpExchange exchange) {
-
-    }
-
-    @Override
-    public void handlePost(HttpExchange exchange) {
-
-    }
-
-    @Override
-    public void handleDelete(HttpExchange exchange) {
-
-    }
 }

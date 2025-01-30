@@ -15,7 +15,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class HttpTaskServer {
-    private final  int port = 8080;
+    private final int port = 8080;
     private final HttpServer server;
     private final TaskManager manager;
     private final Gson gson;
@@ -23,11 +23,7 @@ public class HttpTaskServer {
     public HttpTaskServer(TaskManager manager) throws IOException {
         this.server = HttpServer.create(new InetSocketAddress(port), 0);
         this.manager = Manager.getInMemoryTaskManager();
-        this.gson = new GsonBuilder()
-                .registerTypeAdapter(Duration.class, new DurationAdapter())
-                .registerTypeAdapter(LocalDateTime.class, new LocalDataTimeAdapter())
-                .setPrettyPrinting()
-                .create();
+        this.gson = getGson();
         server.createContext("/tasks", new TaskHandler(manager, gson));
         server.createContext("/epics", new EpicHandler(manager, gson));
         server.createContext("/subtasks", new SubTaskHandler(manager, gson));

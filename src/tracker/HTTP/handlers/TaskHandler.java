@@ -28,21 +28,14 @@ public class TaskHandler extends BaseHttpHandler {
     @Override
     public void handleGet(HttpExchange exchange) throws IOException {
         try {
-            String tasksJson = gson.toJson(manager.getTasks());
-            sendText(exchange, tasksJson, 200);
-        } catch (NotFoundException e) {
-            sendNotFound(exchange);
-        } catch (Exception e) {
-            sendInfernalServerError(exchange);
-        }
-    }
-
-    @Override
-    public void handleGetById(HttpExchange exchange) throws IOException {
-        try {
             String[] path = exchange.getRequestURI().getPath().split("/");
-            String taskByIdJson = gson.toJson(manager.getTask(Integer.parseInt(path[2])));
-            sendText(exchange, taskByIdJson, 200);
+            if (path.length == 2) {
+                String tasksJson = gson.toJson(manager.getTasks());
+                sendText(exchange, tasksJson, 200);
+            } else if (path.length == 3) {
+                String taskByIdJson = gson.toJson(manager.getTask(Integer.parseInt(path[2])));
+                sendText(exchange, taskByIdJson, 200);
+            }
         } catch (NotFoundException e) {
             sendNotFound(exchange);
         } catch (Exception e) {
