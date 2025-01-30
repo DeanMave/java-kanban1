@@ -81,7 +81,7 @@ class FileBackedTaskManagerTest {
             throw new RuntimeException(e);
         }
         String expectContent = "id,type,name,status,description,duration,startTime,endTime,epicId\n" +
-                "0,TASK,Task1,NEW,description1,50,2025-07-09T10:15,2025-07-09T11:05,\n";
+                "1,TASK,Task1,NEW,description1,50,2025-07-09T10:15,2025-07-09T11:05,\n";
         assertEquals(expectContent, fileContent);
     }
 

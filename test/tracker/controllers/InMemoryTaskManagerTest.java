@@ -3,6 +3,7 @@ package tracker.controllers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tracker.enums.TaskStatus;
+import tracker.exceptions.NotFoundException;
 import tracker.model.*;
 
 import java.time.Duration;
@@ -28,12 +29,12 @@ class InMemoryTaskManagerTest {
         Task task = new Task("Task 1", "Description 1", TaskStatus.NEW, Duration.ofMinutes(50)
                 , LocalDateTime.of(2025, Month.JULY, 9, 10, 15));
         int taskId = taskManager.addNewTask(task);
-        assertEquals(0, taskId);
+        assertEquals(1, taskId);
         Task task2 = new Task("Task 1", "Description 1", TaskStatus.NEW, Duration.ofMinutes(50)
                 , LocalDateTime.of(2025, Month.JULY, 9, 12
                 , 50));
         int taskId2 = taskManager.addNewTask(task2);
-        assertEquals(1, taskId2);
+        assertEquals(2, taskId2);
         Task retrievedTask = taskManager.getTask(taskId);
         assertEquals(task, retrievedTask);
     }
@@ -42,15 +43,15 @@ class InMemoryTaskManagerTest {
     void createAndRetrieveEpicWithSubtasksTest() {
         Epic epic = new Epic("Epic 1", "Description 1");
         int epicId = taskManager.addNewEpic(epic);
-        assertEquals(0, epicId);
+        assertEquals(1, epicId);
         SubTask subTask1 = new SubTask("Subtask 1", "Description 1", TaskStatus.NEW, epicId, Duration.ofMinutes(50)
                 , LocalDateTime.of(2025, Month.JULY, 9, 10, 15));
         int subTaskId1 = taskManager.addNewSubTask(subTask1);
-        assertEquals(1, subTaskId1);
+        assertEquals(2, subTaskId1);
         SubTask subTask2 = new SubTask("Subtask 2", "Description 2", TaskStatus.NEW, epicId, Duration.ofMinutes(50)
                 , LocalDateTime.of(2025, Month.JULY, 9, 11, 50));
         int subTaskId2 = taskManager.addNewSubTask(subTask2);
-        assertEquals(2, subTaskId2);
+        assertEquals(3, subTaskId2);
         List<SubTask> subTasks = taskManager.getSubtasks();
         assertEquals(2, subTasks.size());
         List<SubTask> retrievedSubtasks = new ArrayList<>();
@@ -79,8 +80,7 @@ class InMemoryTaskManagerTest {
                 , LocalDateTime.of(2025, Month.JULY, 9, 10, 15));
         final int taskId = taskManager.addNewTask(task);
         taskManager.deleteTask(taskId);
-        List<Task> tasks = taskManager.getTasks();
-        assertEquals(0, tasks.size());
+        assertThrows(NotFoundException.class, () -> taskManager.getTasks());
     }
 
     @Test
@@ -103,8 +103,7 @@ class InMemoryTaskManagerTest {
                 , LocalDateTime.of(2025, Month.JULY, 9, 10, 15));
         final int taskId = taskManager.addNewTask(task);
         taskManager.deleteTasks();
-        List<Task> tasks = taskManager.getTasks();
-        assertEquals(0, tasks.size());
+        assertThrows(NotFoundException.class, () -> taskManager.getTasks());
     }
 
     @Test
@@ -115,16 +114,14 @@ class InMemoryTaskManagerTest {
                 , LocalDateTime.of(2025, Month.JULY, 9, 11, 15));
         int subTaskId1 = taskManager.addNewSubTask(subTask1);
         taskManager.deleteSubtask(subTaskId1);
-        List<SubTask> subTasks = taskManager.getSubtasks();
-        assertEquals(0, subTasks.size());
+        assertThrows(NotFoundException.class, () -> taskManager.getSubtasks());
     }
 
     @Test
     void deleteAllEpicsTest() {
         Epic epic = new Epic("Epic 1", "Description 1");
         taskManager.deleteEpics();
-        List<Epic> epics = taskManager.getEpics();
-        assertEquals(0, epics.size());
+        assertThrows(NotFoundException.class, () -> taskManager.getEpics());
     }
 
     @Test
@@ -218,7 +215,6 @@ class InMemoryTaskManagerTest {
         List<Task> prioritizedTasksExp = new ArrayList<>();
         prioritizedTasksExp.add(subTask1);
         assertEquals(prioritizedTasksExp, prioritizedTasks1);
-        taskManager.getTask(taskId);
         taskManager.getSubtask(subTaskId1);
         List<Task> history = taskManager.getHistory();
         taskManager.deleteTasks();
@@ -245,7 +241,6 @@ class InMemoryTaskManagerTest {
         prioritizedTasksExp.add(task);
         assertEquals(prioritizedTasksExp, prioritizedTasks1);
         taskManager.getTask(taskId);
-        taskManager.getSubtask(subTaskId1);
         List<Task> history = taskManager.getHistory();
         taskManager.deleteSubtasks();
         List<Task> history1 = taskManager.getHistory();
