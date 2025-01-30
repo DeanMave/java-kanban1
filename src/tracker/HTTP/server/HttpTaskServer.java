@@ -15,13 +15,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class HttpTaskServer {
-    private final static int PORT = 8080;
+    private final  int port = 8080;
     private final HttpServer server;
     private final TaskManager manager;
     private final Gson gson;
 
     public HttpTaskServer(TaskManager manager) throws IOException {
-        this.server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        this.server = HttpServer.create(new InetSocketAddress(port), 0);
         this.manager = Manager.getInMemoryTaskManager();
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
@@ -37,7 +37,7 @@ public class HttpTaskServer {
 
     public void serverStart() {
         server.start();
-        System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
+        System.out.println("HTTP-сервер запущен на " + port + " порту!");
     }
 
     public void serverStop() {
