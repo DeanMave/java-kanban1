@@ -63,8 +63,8 @@ public class SubTaskHandler extends BaseHttpHandler {
                 TaskStatus status = TaskStatus.valueOf(jsonObject.get("status").getAsString());
                 int epicId = jsonObject.get("epicId").getAsInt();
                 Duration duration = Duration.ofMinutes(jsonObject.get("duration").getAsLong());
-                LocalDateTime time = LocalDateTime.parse(jsonObject.get("time").getAsString()
-                        , DateTimeFormatter.ofPattern("HH:mm,dd.MM.yyyy"));
+                LocalDateTime time = LocalDateTime.parse(jsonObject.get("time").getAsString(),
+                        DateTimeFormatter.ofPattern("HH:mm,dd.MM.yyyy"));
                 subTask = new SubTask(name, description, status, epicId, duration, time);
             } catch (Exception e) {
                 sendNotFound(exchange);

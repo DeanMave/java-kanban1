@@ -63,8 +63,8 @@ public class TaskHandler extends BaseHttpHandler {
                 String description = jsonObject.get("description").getAsString();
                 TaskStatus status = TaskStatus.valueOf(jsonObject.get("status").getAsString());
                 Duration duration = Duration.ofMinutes(jsonObject.get("duration").getAsLong());
-                LocalDateTime time = LocalDateTime.parse(jsonObject.get("time").getAsString()
-                        , DateTimeFormatter.ofPattern("HH:mm,dd.MM.yyyy"));
+                LocalDateTime time = LocalDateTime.parse(jsonObject.get("time").getAsString(),
+                        DateTimeFormatter.ofPattern("HH:mm,dd.MM.yyyy"));
                 task = new Task(name, description, status, duration, time);
             } catch (Exception e) {
                 sendNotFound(exchange);
