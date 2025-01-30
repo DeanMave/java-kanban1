@@ -28,24 +28,24 @@ public class HttpTaskServer {
                 .registerTypeAdapter(LocalDateTime.class, new LocalDataTimeAdapter())
                 .setPrettyPrinting()
                 .create();
-        server.createContext("/tasks", new TaskHandler(manager,gson));
-        server.createContext("/epics", new EpicHandler(manager,gson));
-        server.createContext("/subtasks", new SubTaskHandler(manager,gson));
-        server.createContext("/history", new HistoryHandler(manager,gson));
-        server.createContext("/prioritized", new PriorityHandler(manager,gson));
+        server.createContext("/tasks", new TaskHandler(manager, gson));
+        server.createContext("/epics", new EpicHandler(manager, gson));
+        server.createContext("/subtasks", new SubTaskHandler(manager, gson));
+        server.createContext("/history", new HistoryHandler(manager, gson));
+        server.createContext("/prioritized", new PriorityHandler(manager, gson));
     }
 
-    public void serverStart(){
+    public void serverStart() {
         server.start();
         System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
     }
 
-    public void serverStop(){
+    public void serverStop() {
         server.stop(1);
         System.out.println("HTTP-сервер остановлен");
     }
 
-    public static Gson getGson(){
+    public static Gson getGson() {
         return new GsonBuilder()
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDataTimeAdapter())
