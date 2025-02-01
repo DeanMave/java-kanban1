@@ -150,7 +150,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 task.setId(id);
                 break;
             case EPIC:
-//                "id,type,name,status,description,duration,startTime,epicId\n"
                 task = new Epic(name, description);
                 task.setId(id);
                 task.setStatus(status);
